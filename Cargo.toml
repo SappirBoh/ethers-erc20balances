@@ -11,7 +11,8 @@ repository = "https://github.com/auebasota1337/ethers-erc20balances"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ethers = "2.0.8"
+# ethers = "2.0.8"
+ethers = { git = "https://github.com/OfirModai/ethers-rs.git" }
 tokio = { version = "1.29.1", features = ["full"] }
 async-trait = "0.1.71"
 auto_impl = "1.1"
