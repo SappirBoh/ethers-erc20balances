@@ -115,6 +115,11 @@ pub static CONTRACTS: Lazy<HashMap<U256, Address>> = Lazy::new(|| {
             Address::from_str("0x2Dc42853DfFc945844526669679F84CEf5c9Fea0")
                 .expect("Failed to parse address"),
         ), // Base
+        (
+            23294.into(),
+            Address::from_str("0x2Dc42853DfFc945844526669679F84CEf5c9Fea0")
+                .expect("Failed to parse address"),
+        ), // Oasis Sapphire
     ])
 });
 
