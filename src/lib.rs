@@ -127,7 +127,6 @@ pub static CONTRACTS: Lazy<HashMap<U256, Address>> = Lazy::new(|| {
         ), // Oasis Sapphire
     ])
 });
-
 abigen!(BalanceChecker, "abi/BalanceChecker.abi.json",);
 
 #[async_trait]
@@ -141,12 +140,6 @@ pub trait Erc20BalancesMiddleware {
         token_addresses: Vec<Address>,
     ) -> Result<HashMap<Address, HashMap<Address, U256>>, Self::Error>;
     async fn get_erc20_balances_with_chain_id(
-        &self,
-        address: Vec<Address>,
-        token_addresses: Vec<Address>,
-        chain_id: U256,
-    ) -> Result<HashMap<Address, HashMap<Address, U256>>, Self::Error>;
-    async fn get_erc20_balances_for_hoodi(
         &self,
         address: Vec<Address>,
         token_addresses: Vec<Address>,
@@ -168,13 +161,8 @@ where
         token_addresses: Vec<Address>,
     ) -> Result<HashMap<Address, HashMap<Address, U256>>, Self::Error> {
         let chain_id = self.get_chainid().await?;
-        if chain_id == 560048.into() {
-            self.get_erc20_balances_for_hoodi(address, token_addresses, chain_id)
-                .await
-        }else{
-            self.get_erc20_balances_with_chain_id(address, token_addresses, chain_id)
-                .await
-        }
+        self.get_erc20_balances_with_chain_id(address, token_addresses, chain_id)
+            .await
     }
 
     async fn get_erc20_balances_with_chain_id(
@@ -194,14 +182,6 @@ where
             ProviderError::CustomError(format!("Failed to get balances for addresses {:?} and tokens {:?} on chain id {}; {:?}", address, token_addresses, chain_id, e))
         )?;
         Ok(reformat(address, token_addresses, balances))
-    }
-    async fn get_erc20_balances_for_hoodi(
-        &self,
-        address: Vec<Address>,
-        token_addresses: Vec<Address>,
-        chain_id: U256,
-    ) -> Result<HashMap<Address, HashMap<Address, U256>>, Self::Error>{
-        Ok(HashMap::new()) 
     }
 }
 
@@ -223,13 +203,7 @@ where
             .get_chainid()
             .await
             .map_err(|e| ProviderError::CustomError(format!("Failed to get chain id; {:?}", e)))?;
-        if chain_id == 560048.into() {
-            return self.get_erc20_balances_for_hoodi(address, token_addresses, chain_id).await
-        }   
-        else {
-            Self::get_erc20_balances_with_chain_id(self, address, token_addresses, chain_id).await    
-        }
-        
+        Self::get_erc20_balances_with_chain_id(self, address, token_addresses, chain_id).await
     }
 
     async fn get_erc20_balances_with_chain_id(
@@ -249,15 +223,6 @@ where
             ProviderError::CustomError(format!("Failed to get balances for addresses {:?} and tokens {:?} on chain id {}; {:?}", address, token_addresses, chain_id, e))
         )?;
         Ok(reformat(address, token_addresses, balances))
-    }
-
-    async fn get_erc20_balances_for_hoodi(
-        &self,
-        address: Vec<Address>,
-        token_addresses: Vec<Address>,
-        chain_id: U256,
-    ) -> Result<HashMap<Address, HashMap<Address, U256>>, Self::Error>{
-        Ok(HashMap::new()) 
     }
 }
 
@@ -324,5 +289,4 @@ mod tests {
 
         assert_eq!(result, expected);
     }
-
 }
